@@ -1,0 +1,9 @@
+Controller\CarTrackerHandlerImpl.class
+proftaak\Model\CarTrackerDAO_.class
+Websocket\CartrackerEncoder.class
+proftaak\Model\CarTrackerDAO.class
+Websocket\WebSocket.class
+Controller\CarTrackerHandler.class
+Controller\OpenController.class
+REST\FtoCService.class
+Websocket\CartrackerDecoder.class
