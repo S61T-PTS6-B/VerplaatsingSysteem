@@ -25,15 +25,17 @@ import proftaak.Model.CarTrackerDAO;
  * @author Casvan
  */
 @ServerEndpoint(value="/test/notifications",
-        encoders = { CartrackerEncoder.class} ,
-        decoders = { CartrackerDecoder.class})
+        encoders = {CartrackerEncoder.class},
+        decoders = {CartrackerDecoder.class})
 public class WebSocket {
         private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
+        Session session;
         
     @OnOpen
     public void onOpen(Session session)
     {
         sessions.add(session);
+        this.session = session;
         System.out.println("Max is echt een flikker");
         session.setMaxBinaryMessageBufferSize(80000);
         session.setMaxTextMessageBufferSize(80000);
@@ -43,9 +45,19 @@ public class WebSocket {
     }
     
      @OnMessage
-    public void onMessage(CarTrackerDAO message)
+    public void onMessage(String message)
     {
-        
+       
+         for(Session openSession: sessions)
+        {
+            try {
+                 openSession.getBasicRemote().sendObject(message);
+            } catch (IOException ex) {
+                Logger.getLogger(WebSocket.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (EncodeException ex) {
+                Logger.getLogger(WebSocket.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
     
     @OnClose

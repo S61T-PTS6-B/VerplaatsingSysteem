@@ -37,6 +37,7 @@ public class CartrackerDecoder implements Decoder.TextStream<CarTrackerDAO> {
     public CarTrackerDAO decode(Reader arg0) throws DecodeException, IOException, NullPointerException {
         System.out.println("decoder");
         count++;
+        try{
         JsonReader jsonReader = Json.createReader(arg0);
         JsonObject jsontje = jsonReader.readObject();
         JSONObject json = new JSONObject(jsontje.toString());
@@ -48,8 +49,14 @@ public class CartrackerDecoder implements Decoder.TextStream<CarTrackerDAO> {
         cartracker.setLongitude(longtitude);
         cartracker.setAutoid(json.getInt("carId"));
         carTrackerHandler.addCarTracker(cartracker);
-        return cartracker;
-        
+        }catch(Exception e){
+            CarTrackerDAO cartracker = new CarTrackerDAO();
+            cartracker.setId(0);
+            return cartracker;
+        }
+        CarTrackerDAO cartracker = new CarTrackerDAO();
+        cartracker.setId(1);
+        return cartracker; 
     }
 
     @Override
