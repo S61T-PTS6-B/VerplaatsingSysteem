@@ -8,6 +8,8 @@ package Websocket;
 import Controller.CarTrackerHandler;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.json.Json;
@@ -25,7 +27,7 @@ import proftaak.Model.CarTrackerDAO;
  * @author Casvan
  */
 @Stateless
-public class CartrackerDecoder implements Decoder.TextStream<CarTrackerDAO> {
+public class CartrackerDecoder implements Decoder.Text<CarTrackerDAO> {
     
     @EJB
     private CarTrackerHandler carTrackerHandler;
@@ -33,14 +35,24 @@ public class CartrackerDecoder implements Decoder.TextStream<CarTrackerDAO> {
     public CartrackerDecoder(){
         
     }
+  
+
     @Override
-    public CarTrackerDAO decode(Reader arg0) throws DecodeException, IOException, NullPointerException {
+    public void init(EndpointConfig config) {
+      System.out.println("init");
+    }
+
+    @Override
+    public void destroy() {
+        
+    }
+
+    @Override
+    public CarTrackerDAO decode(String s) throws DecodeException {
         System.out.println("decoder");
         count++;
         try{
-        JsonReader jsonReader = Json.createReader(arg0);
-        JsonObject jsontje = jsonReader.readObject();
-        JSONObject json = new JSONObject(jsontje.toString());
+        JSONObject json = new JSONObject(s);
         double lat =  json.getDouble("lat");
         double longtitude = json.getDouble("long");
         
@@ -60,13 +72,18 @@ public class CartrackerDecoder implements Decoder.TextStream<CarTrackerDAO> {
     }
 
     @Override
-    public void init(EndpointConfig config) {
-      
-    }
-
-    @Override
-    public void destroy() {
-        
+    public boolean willDecode(String s) {
+        if(s != null){
+            try {
+                decode(s);
+            } catch (DecodeException ex) {
+                Logger.getLogger(CartrackerDecoder.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return true;
+        }
+        else{
+            return false;
+        }
     }
     
 }

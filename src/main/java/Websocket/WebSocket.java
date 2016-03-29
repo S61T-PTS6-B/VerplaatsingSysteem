@@ -36,7 +36,7 @@ public class WebSocket {
     {
         sessions.add(session);
         this.session = session;
-        System.out.println("Max is echt een flikker");
+        System.out.println("Open");
         session.setMaxBinaryMessageBufferSize(80000);
         session.setMaxTextMessageBufferSize(80000);
         int buffersize = session.getMaxBinaryMessageBufferSize();
