@@ -5,6 +5,7 @@
  */
 package Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import proftaak.Model.CarTrackerDAO;
 
@@ -16,4 +17,5 @@ public interface CarTrackerHandler {
     public boolean addCarTracker(CarTrackerDAO car);
     public List<CarTrackerDAO> getCarTrackers();
     public List<CarTrackerDAO> getCarTrackerById(int id);
+    public List<List<CarTrackerDAO>> getCarTrackerByList(List<Integer> ids);
 }

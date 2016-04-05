@@ -13,6 +13,6 @@
     </head>
     <body>
         <h1>Hello World!</h1>
-        <a href="OpenController"> hoi!!! </a>
+        <a href="http://localhost:8080/VerplaatsingSysteem/Rest/ftocservice/3">Rest service nummer 3 </a>
     </body>
 </html>
