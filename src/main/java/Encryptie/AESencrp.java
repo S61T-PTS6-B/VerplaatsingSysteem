@@ -19,8 +19,7 @@ public class AESencrp {
     
      private static final String ALGO = "AES";
     private static final byte[] keyValue = 
-        new byte[] { 'T', 'h', 'e', 'B', 'e', 's', 't',
-'S', 'e', 'c', 'r','e', 't', 'K', 'e', 'y' };
+        new byte[] { 'P','R','O','F','T','A','A','K','G','R','O','E','P','G','H','H'};
 
 public static String encrypt(String Data) throws Exception {
         Key key = generateKey();

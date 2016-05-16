@@ -20,6 +20,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,7 +28,7 @@ import org.json.JSONObject;
 import proftaak.Model.CarTrackerDAO;
 
 @Stateless
-@Path("/ftocservice")
+@Path("/carTrackers")
 public class FtoCService {
 
     @EJB
@@ -39,29 +40,11 @@ public class FtoCService {
     String splitter = ":";
     List<Integer> carids = new ArrayList<Integer>();
 
-    @GET
-    @Produces("application/json")
-    public Response convertFtoC() throws JSONException {
-
-        JSONObject jsonObject = new JSONObject();
-        Double fahrenheit = 98.24;
-        Double celsius;
-        celsius = (fahrenheit - 32) * 5 / 9;
-        List<CarTrackerDAO> cartrackers = cartrackerhandler.getCarTrackers();
-
-        for (CarTrackerDAO c : cartrackers) {
-            jsonObject.put("cartracker" + c.getId(), c.getId());
-        }
-
-        String result = jsonObject.toString();
-        return Response.status(200).entity(result).build();
-    }
-
-    @Path("{f}")
+    @Path("getCT")
     @GET
     @Consumes("text/plain")
     @Produces("application/json")
-    public Response convertFtoCfromInput(@PathParam("f") String f) throws JSONException, Exception {
+    public Response getTrackers(@QueryParam("code") String f) throws JSONException, Exception {
         JSONObject jsonObject;
         AESencrp encrp = new AESencrp();
         String gegevens = f.replace("()()", "/");
