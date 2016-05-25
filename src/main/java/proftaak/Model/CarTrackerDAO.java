@@ -6,11 +6,15 @@
 package proftaak.Model;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import static javax.persistence.TemporalType.DATE;
+import static javax.persistence.TemporalType.TIMESTAMP;
 
 /**
  *
@@ -25,13 +29,17 @@ public class CarTrackerDAO implements Serializable {
     private int id;
     
     @Column
-    private int carId;
+    private String licensePlate;
    
     @Column
     private double latitude;
     
     @Column
     private double longitude;
+    
+    @Column
+    @Temporal(TIMESTAMP)
+    private Date date;
 
    
     public double getLatitude() {
@@ -58,19 +66,30 @@ public class CarTrackerDAO implements Serializable {
         this.id = id;
     }
 
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+    
+    
+    
+
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (int) id;
         return hash;
-    }
-
-    public int getAutoid() {
-        return carId;
-    }
-
-    public void setAutoid(int autoid) {
-        this.carId = autoid;
     }
 
     @Override

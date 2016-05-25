@@ -46,6 +46,7 @@ public class FtoCService {
     @Produces("application/json")
     public Response getTrackers(@QueryParam("code") String f) throws JSONException, Exception {
         JSONObject jsonObject;
+        
         AESencrp encrp = new AESencrp();
         String gegevens = f.replace("()()", "/");
         gegevens = AESencrp.decrypt(gegevens);
@@ -57,7 +58,7 @@ public class FtoCService {
             for (CarTrackerDAO c : carList) {
                 jsonObject = new JSONObject();
                 jsonObject.put("id", c.getId());
-                jsonObject.put("carId", c.getAutoid());
+                jsonObject.put("licenseplate", c.getLicensePlate());
                 jsonObject.put("lat", c.getLatitude());
                 jsonObject.put("long", c.getLongitude());
                 array.put(jsonObject);
@@ -65,6 +66,24 @@ public class FtoCService {
             jsonArray.put(array);
         }
         return Response.status(200).entity(jsonArray.toString()).build();
+    }
+    
+    @Path("getMonth")
+    @GET
+    @Consumes("text/plain")
+    @Produces("application/json")
+    public Response getbyMonth(@QueryParam("id") String id,@QueryParam("month") int month,@QueryParam("year") int year) throws JSONException, Exception {
+        JSONObject jsonObject;
+        JSONArray array = new JSONArray();
+        for(CarTrackerDAO c : cartrackerhandler.getCarTrackers(id, month, year)){
+            jsonObject = new JSONObject();
+                jsonObject.put("id", c.getId());
+                jsonObject.put("licenseplate", c.getLicensePlate());
+                jsonObject.put("lat", c.getLatitude());
+                jsonObject.put("long", c.getLongitude());
+                array.put(jsonObject);
+        }
+        return Response.status(200).entity(array.toString()).build();
     }
 
     public void getVariables(String input) {

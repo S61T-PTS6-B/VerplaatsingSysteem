@@ -6,6 +6,8 @@
 package JMS;
 
 import Controller.CarTrackerHandler;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +19,7 @@ import javax.ejb.MessageDrivenContext;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import proftaak.Model.CarTrackerDAO;
 
@@ -24,7 +27,7 @@ import proftaak.Model.CarTrackerDAO;
  *
  * @author casva
  */
-@MessageDriven(mappedName = "jms/KwetterGo/queue", activationConfig = {
+@MessageDriven(mappedName = "jms/Verplaatsing/queue", activationConfig = {
     @ActivationConfigProperty(propertyName = "acknowledgeMode",
             propertyValue = "Auto-acknowledge"),
     @ActivationConfigProperty(propertyName = "destinationType",
@@ -46,14 +49,27 @@ public class JmsBean implements MessageListener {
     public void onMessage(Message message) {
         try {
             System.out.println("message received");
-            JSONObject json =  new JSONObject(message.getStringProperty("content"));
-            CarTrackerDAO cartracker = new CarTrackerDAO();
-            cartracker.setLatitude(json.getDouble("lat"));
-            cartracker.setLongitude(json.getDouble("long"));
-            cartracker.setAutoid(json.getInt("carId"));
-            cartrackerHandler.addCarTracker(cartracker);
+            CarTrackerDAO cartracker;
+            JSONObject object;
+            object = new JSONObject(message.getStringProperty("locations"));
+            JSONArray array =  object.getJSONArray("locations");
+            for(int i = 0; i < array.length() ; i++){
+                object = (JSONObject) array.get(i);
+                cartracker = new CarTrackerDAO();
+                cartracker.setLicensePlate(message.getStringProperty("carName"));
+                String dateStr = object.getString("date");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date birthDate = sdf.parse(dateStr);
+                cartracker.setDate(birthDate);
+                cartracker.setLatitude(object.getDouble("lat"));
+                cartracker.setLongitude(object.getDouble("long"));
+                cartrackerHandler.addCarTracker(cartracker);
+            }
+            
         } catch (JMSException ex) {
             Logger.getLogger(JmsBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (ParseException ex) {
+            Logger.getLogger(JmsBean.class.getName()).log(Level.SEVERE, null, ex);
+        } 
     }
 }

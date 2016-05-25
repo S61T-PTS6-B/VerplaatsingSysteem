@@ -6,7 +6,10 @@
 package Controller;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -59,6 +62,21 @@ public class CarTrackerHandlerImpl implements CarTrackerHandler {
             cartrackers.add(carids);
         }
         return cartrackers;
+    }
+
+    @Override
+    public List<CarTrackerDAO> getCarTrackers(String id, int maandid, int jaar) {
+        List<CarTrackerDAO> cartrackers = null;
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2016, maandid -1, 1, 0, 0, 0);
+        Date date = calendar.getTime();
+        Calendar calendarafter = new GregorianCalendar();
+        calendarafter.set(2016, maandid, 1, 0, 0, 0);
+        Date after = calendarafter.getTime();
+        Query query = entityManager.createQuery("SELECT c FROM CarTrackerDAO c WHERE c.date BETWEEN :date AND :after ORDER BY c.date ASC").setParameter("date", date).setParameter("after", after);
+        List<CarTrackerDAO> carids = (List<CarTrackerDAO>) query.getResultList();
+        return carids;
+
     }
 
 }
