@@ -19,4 +19,6 @@ public interface CarTrackerHandler {
     public List<CarTrackerDAO> getCarTrackerById(int id);
     public List<List<CarTrackerDAO>> getCarTrackerByList(List<Integer> ids);
     public List<CarTrackerDAO> getCarTrackers(String id,int maandid, int jaar);
+    public List<CarTrackerDAO> getCarTrackersbyMotnh(int maandid, int jaar);
+    public List<CarTrackerDAO> getCarTrackersPolitie(String id,long millis);
 }

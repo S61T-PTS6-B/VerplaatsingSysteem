@@ -11,7 +11,11 @@ package REST;
  */
 import Controller.CarTrackerHandler;
 import Encryptie.AESencrp;
+import Politie.PolitieConnector;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -26,6 +30,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import proftaak.Model.CarTrackerDAO;
+import proftaak.Model.Data;
+import proftaak.Model.DataId;
 
 @Stateless
 @Path("/carTrackers")
@@ -46,7 +52,7 @@ public class FtoCService {
     @Produces("application/json")
     public Response getTrackers(@QueryParam("code") String f) throws JSONException, Exception {
         JSONObject jsonObject;
-        
+
         AESencrp encrp = new AESencrp();
         String gegevens = f.replace("()()", "/");
         gegevens = AESencrp.decrypt(gegevens);
@@ -67,23 +73,141 @@ public class FtoCService {
         }
         return Response.status(200).entity(jsonArray.toString()).build();
     }
-    
+
+    //http://localhost:8080/VerplaatsingSysteem/Rest/carTrackers/getMonth?code=fleI0VKkYt2njqQHHqUfvxn1xy4IGw3sjxEnV/jR3Hs=
     @Path("getMonth")
     @GET
     @Consumes("text/plain")
     @Produces("application/json")
-    public Response getbyMonth(@QueryParam("id") String id,@QueryParam("month") int month,@QueryParam("year") int year) throws JSONException, Exception {
+    public Response getbyMonth(@QueryParam("code") String f) throws JSONException, Exception {
+        JSONObject jsonObject;
+        Boolean eerstekeer = true;
+        JSONArray array = new JSONArray();
+        AESencrp encrp = new AESencrp();
+        f = f.replace(" ", "+");
+        String encrpstring = AESencrp.decrypt(f);
+        DataId data = (DataId) getData(encrpstring);
+        JSONObject Container = new JSONObject();
+        for (CarTrackerDAO c : cartrackerhandler.getCarTrackers(data.getId(), Integer.valueOf(data.getMonth()), Integer.valueOf(data.getYear()))) {
+            jsonObject = new JSONObject();
+            if (eerstekeer) {
+                Container.put("licenseplate", c.getLicensePlate());
+                eerstekeer = false;
+            }
+            jsonObject.put("lat", c.getLatitude());
+            jsonObject.put("long", c.getLongitude());
+            jsonObject.put("date", c.getDate());
+            array.put(jsonObject);
+        }
+        Container.put("locations", array);
+        String response = AESencrp.encrypt(Container.toString());
+        return Response.status(200).entity(response).build();
+    }
+
+    //http://localhost:8080/VerplaatsingSysteem/Rest/carTrackers/allMonth?code=6SaKNcdjwWHe6UEvguLzlWjDHF7pYgY7uJSv7jiELc4=
+    @Path("allMonth")
+    @GET
+    @Consumes("text/plain")
+    @Produces("application/json")
+    public Response getallbyMonth(@QueryParam("code") String f) throws JSONException, Exception {
+        String lastCar = "";
+        boolean eersteauto = true;
         JSONObject jsonObject;
         JSONArray array = new JSONArray();
-        for(CarTrackerDAO c : cartrackerhandler.getCarTrackers(id, month, year)){
+        String encrp = AESencrp.decrypt(f);
+        Data data = getData(encrp);
+        JSONObject Container = new JSONObject();
+        JSONArray arrayresponse = new JSONArray();
+        for (CarTrackerDAO c : cartrackerhandler.getCarTrackersbyMotnh(Integer.valueOf(data.getMonth()), Integer.valueOf(data.getYear()))) {
             jsonObject = new JSONObject();
-                jsonObject.put("id", c.getId());
-                jsonObject.put("licenseplate", c.getLicensePlate());
-                jsonObject.put("lat", c.getLatitude());
-                jsonObject.put("long", c.getLongitude());
-                array.put(jsonObject);
+            if(eersteauto){
+                Container = new JSONObject();
+                array = new JSONArray();
+                Container.put("licenseplate", c.getLicensePlate());
+                lastCar = c.getLicensePlate();
+                eersteauto = false;
+            }
+            else if (!lastCar.equals(c.getLicensePlate())) {
+                Container.put("locations", array);
+                arrayresponse.put(Container);
+                Container = new JSONObject();
+                array = new JSONArray();
+                Container.put("licenseplate", c.getLicensePlate());
+                lastCar = c.getLicensePlate();
+            }
+            jsonObject.put("lat", c.getLatitude());
+            jsonObject.put("long", c.getLongitude());
+            jsonObject.put("date", c.getDate());
+            array.put(jsonObject);
         }
-        return Response.status(200).entity(array.toString()).build();
+        String response = AESencrp.encrypt(arrayresponse.toString());
+        return Response.status(200).entity(response).build();
+    }
+    
+    @Path("getPolitie")
+    @GET
+    @Consumes("text/plain")
+    @Produces("application/json")
+    public Response getPolitie(@QueryParam("code") String f) throws JSONException, Exception {
+        JSONObject jsonObject;
+        Boolean eerstekeer = true;
+        JSONArray array = new JSONArray();
+        AESencrp encrp = new AESencrp();
+        f = f.replace(" ", "+");
+        String encrpstring = AESencrp.decrypt(f);
+        String[] antwoord = encrpstring.split("&");
+        int indexid = antwoord[0].indexOf("=");
+        int indexmillis = antwoord[1].indexOf("=");
+        String id = antwoord[0].substring(indexid + 1);
+        String millis = antwoord[1].substring(indexmillis +1);
+        PolitieConnector con = PolitieConnector.getInstance();
+        con.setLicenseplate(id);
+        JSONObject Container = new JSONObject();
+        for (CarTrackerDAO c : cartrackerhandler.getCarTrackersPolitie(id,Long.valueOf(millis))) {
+            jsonObject = new JSONObject();
+            if (eerstekeer) {
+                Container.put("licenseplate", c.getLicensePlate());
+                eerstekeer = false;
+            }
+            jsonObject.put("lat", c.getLatitude());
+            jsonObject.put("long", c.getLongitude());
+            DateFormat writeFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss");
+            String koe = writeFormat.format(c.getDate());
+            jsonObject.put("date", koe);
+            array.put(jsonObject);
+        }
+        Container.put("locations", array);
+        String response = AESencrp.encrypt(Container.toString());
+        return Response.status(200).entity(response).build();
+    }
+
+    public Data getData(String data) {
+        String[] antwoord = data.split("&");
+        Data data2;
+        switch (antwoord.length) {
+            case 3:
+                {
+                    int idindex = antwoord[0].indexOf("=");
+                    int monthindex = antwoord[1].indexOf("=");
+                    int yearindex = antwoord[2].indexOf("=");
+                    String id = antwoord[0].substring(idindex + 1);
+                    String month = antwoord[1].substring(monthindex + 1);
+                    String year = antwoord[2].substring(yearindex + 1);
+                    data2 = new DataId(id, month, year);
+                    break;
+                }
+            default:
+                {
+                    int monthindex = antwoord[0].indexOf("=");
+                    int yearindex = antwoord[1].indexOf("=");
+                    String month = antwoord[0].substring(monthindex + 1);
+                    String year = antwoord[1].substring(yearindex + 1);
+                    data2 = new Data(month, year);
+                    break;
+                }
+        }
+
+        return data2;
     }
 
     public void getVariables(String input) {

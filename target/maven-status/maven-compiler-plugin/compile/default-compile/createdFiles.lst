@@ -1,8 +1,10 @@
 Controller\CarTrackerHandlerImpl.class
-proftaak\Model\CarTrackerDAO_.class
-proftaak\Model\CarTrackerDAO.class
 Encryptie\AESencrp.class
+REST\FtoCService.class
+proftaak\Model\CarTrackerDAO_.class
+proftaak\Model\DataId.class
+proftaak\Model\Data.class
+proftaak\Model\CarTrackerDAO.class
 JMS\JmsBean.class
 Controller\CarTrackerHandler.class
 Controller\OpenController.class
-REST\FtoCService.class

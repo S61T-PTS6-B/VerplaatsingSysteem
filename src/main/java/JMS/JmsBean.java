@@ -6,6 +6,8 @@
 package JMS;
 
 import Controller.CarTrackerHandler;
+import Politie.PolitieConnector;
+import Send.ClientSend;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -49,6 +51,10 @@ public class JmsBean implements MessageListener {
     public void onMessage(Message message) {
         try {
             System.out.println("message received");
+            PolitieConnector con = PolitieConnector.getInstance();
+            if(!con.getLicenseplate().equals("")){
+                ClientSend.Send(message.getStringProperty("locations"));
+            }
             CarTrackerDAO cartracker;
             JSONObject object;
             object = new JSONObject(message.getStringProperty("locations"));

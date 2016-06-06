@@ -68,15 +68,41 @@ public class CarTrackerHandlerImpl implements CarTrackerHandler {
     public List<CarTrackerDAO> getCarTrackers(String id, int maandid, int jaar) {
         List<CarTrackerDAO> cartrackers = null;
         Calendar calendar = new GregorianCalendar();
-        calendar.set(2016, maandid -1, 1, 0, 0, 0);
+        calendar.set(jaar, maandid -1, 25, 0, 0, 0);
         Date date = calendar.getTime();
         Calendar calendarafter = new GregorianCalendar();
-        calendarafter.set(2016, maandid, 1, 0, 0, 0);
+        calendarafter.set(jaar, maandid, 25, 0, 0, 0);
         Date after = calendarafter.getTime();
-        Query query = entityManager.createQuery("SELECT c FROM CarTrackerDAO c WHERE c.date BETWEEN :date AND :after ORDER BY c.date ASC").setParameter("date", date).setParameter("after", after);
+        Query query = entityManager.createQuery("SELECT c FROM CarTrackerDAO c WHERE c.licensePlate = :id AND c.date BETWEEN :date AND :after ORDER BY c.date ASC ").setParameter("date", date).setParameter("after", after).setParameter("id", id);
         List<CarTrackerDAO> carids = (List<CarTrackerDAO>) query.getResultList();
         return carids;
 
+    }
+
+    @Override
+    public List<CarTrackerDAO> getCarTrackersbyMotnh(int maandid, int jaar) {
+        List<CarTrackerDAO> cartrackers = null;
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(2016, maandid -1, 25, 0, 0, 0);
+        Date date = calendar.getTime();
+        Calendar calendarafter = new GregorianCalendar();
+        calendarafter.set(2016, maandid, 25, 0, 0, 0);
+        Date after = calendarafter.getTime();
+        Query query = entityManager.createQuery("SELECT c FROM CarTrackerDAO c WHERE c.date BETWEEN :date AND :after ORDER BY c.licensePlate,c.date ASC").setParameter("date", date).setParameter("after", after);
+        List<CarTrackerDAO> carids = (List<CarTrackerDAO>) query.getResultList();
+        return carids;
+    }
+
+    @Override
+    public List<CarTrackerDAO> getCarTrackersPolitie(String id, long millis) {
+        List<CarTrackerDAO> cartrackers = null;
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(millis);
+        Date date = calendar.getTime();
+        Date after = new Date();
+        Query query = entityManager.createQuery("SELECT c FROM CarTrackerDAO c WHERE c.licensePlate = :id AND c.date BETWEEN :date AND :after ORDER BY c.licensePlate,c.date ASC").setParameter("date", date).setParameter("after", after).setParameter("id", id);
+        List<CarTrackerDAO> carids = (List<CarTrackerDAO>) query.getResultList();
+        return carids;
     }
 
 }
