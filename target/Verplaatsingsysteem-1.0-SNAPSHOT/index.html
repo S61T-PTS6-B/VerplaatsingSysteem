@@ -3,8 +3,40 @@
     <head>
         <title>Start Page</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script>
+            function Post(){
+            var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    console.log(xhttp.status);
+                    if (xhttp.readyState === 4 && xhttp.status === 200) {
+                        
+                    }
+                };
+                xhttp.open("POST", "http://:9233/MonitoringSysteem/Rest/statusmessages/postmessage?systeemnaam=verplaatsingsysteem&message=error", true);
+                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhttp.send();
+            }
+            function RestGet(){
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    console.log(xhttp.status);
+                    if (xhttp.readyState === 4 && xhttp.status === 200) {
+                        var userobj = JSON.parse(xhttp.responseText);
+                        console.log(userobj);
+                        document.getElementById("messagesp").textContent = userobj["messages"];
+                        document.getElementById("packagesp").textContent = userobj["packages"];
+                    }
+                };
+                xhttp.open("GET", "http://localhost:8080/VerplaatsingSysteem/Rest/carTrackers/getMonitoring", true);
+                xhttp.send();
+            }
+            
+        </script>
     </head>
-    <body>
+    <body onload="RestGet()">
         <h1>Hello World!</h1>
+        <p id="messagesp"></p>
+        <p id="packagesp"></p>
+        <button onclick="Post()">Error</button>
     </body>
 </html>

@@ -10,11 +10,13 @@ package REST;
  * @author Casvan
  */
 import Controller.CarTrackerHandler;
+import Controller.VerplaatsingSysteem;
 import Encryptie.AESencrp;
 import Politie.PolitieConnector;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
@@ -96,7 +98,9 @@ public class FtoCService {
             }
             jsonObject.put("lat", c.getLatitude());
             jsonObject.put("long", c.getLongitude());
-            jsonObject.put("date", c.getDate());
+            Calendar ca = Calendar.getInstance();
+            ca.setTimeInMillis(c.getDate());
+            jsonObject.put("date", ca.getTime());
             array.put(jsonObject);
         }
         Container.put("locations", array);
@@ -137,7 +141,9 @@ public class FtoCService {
             }
             jsonObject.put("lat", c.getLatitude());
             jsonObject.put("long", c.getLongitude());
-            jsonObject.put("date", c.getDate());
+            Calendar ca = Calendar.getInstance();
+            ca.setTimeInMillis(c.getDate());
+            jsonObject.put("date", ca.getTime());
             array.put(jsonObject);
         }
         String response = AESencrp.encrypt(arrayresponse.toString());
@@ -171,16 +177,38 @@ public class FtoCService {
             }
             jsonObject.put("lat", c.getLatitude());
             jsonObject.put("long", c.getLongitude());
-            DateFormat writeFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss");
-            String koe = writeFormat.format(c.getDate());
-            jsonObject.put("date", koe);
+            Calendar ca = Calendar.getInstance();
+            ca.setTimeInMillis(c.getDate());
+            jsonObject.put("date", ca.getTime());
             array.put(jsonObject);
         }
         Container.put("locations", array);
         String response = AESencrp.encrypt(Container.toString());
         return Response.status(200).entity(response).build();
     }
-
+    
+    @Path("getMonitoring")
+    @GET
+    @Produces("application/json")
+    public Response getMonitor() throws JSONException, Exception {
+        VerplaatsingSysteem systeem = VerplaatsingSysteem.getInstance();
+        int messages = systeem.getMessages();
+        int packages = systeem.getPackages();
+        JSONObject object = new JSONObject();
+        object.put("messages", messages);
+        object.put("packages", packages);
+        return Response.status(200).entity(object.toString()).build();
+    }
+    
+    @Path("getStatus")
+    @GET
+    @Produces("application/json")
+    public Response getStatus() throws JSONException, Exception {
+        return Response.ok().build();
+    }
+    
+    
+    
     public Data getData(String data) {
         String[] antwoord = data.split("&");
         Data data2;

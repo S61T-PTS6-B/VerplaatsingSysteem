@@ -1,15 +1,14 @@
 package proftaak.Model;
 
-import java.util.Date;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2016-06-06T12:55:36")
+@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2016-06-15T14:20:36")
 @StaticMetamodel(CarTrackerDAO.class)
 public class CarTrackerDAO_ { 
 
-    public static volatile SingularAttribute<CarTrackerDAO, Date> date;
+    public static volatile SingularAttribute<CarTrackerDAO, Long> date;
     public static volatile SingularAttribute<CarTrackerDAO, String> licensePlate;
     public static volatile SingularAttribute<CarTrackerDAO, Double> latitude;
     public static volatile SingularAttribute<CarTrackerDAO, Integer> id;

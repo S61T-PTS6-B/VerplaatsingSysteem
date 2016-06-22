@@ -1,5 +1,8 @@
 Controller\CarTrackerHandlerImpl.class
+Send\ClientSend.class
+Controller\VerplaatsingBean.class
 Encryptie\AESencrp.class
+Politie\PolitieConnector.class
 REST\FtoCService.class
 proftaak\Model\CarTrackerDAO_.class
 proftaak\Model\DataId.class

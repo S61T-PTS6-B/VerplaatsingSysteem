@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
 import static javax.persistence.TemporalType.TIMESTAMP;
+import org.json.JSONObject;
 
 /**
  *
@@ -38,8 +39,7 @@ public class CarTrackerDAO implements Serializable {
     private double longitude;
     
     @Column
-    @Temporal(TIMESTAMP)
-    private Date date;
+    private long date;
 
    
     public double getLatitude() {
@@ -74,11 +74,11 @@ public class CarTrackerDAO implements Serializable {
         this.licensePlate = licensePlate;
     }
 
-    public Date getDate() {
+    public long getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(long date) {
         this.date = date;
     }
     
@@ -103,6 +103,15 @@ public class CarTrackerDAO implements Serializable {
             return false;
         }
         return true;
+    }
+    
+    public String getJson(){
+        JSONObject object = new JSONObject();
+        object.put("licenseplate", this.getLicensePlate());
+        object.put("lat", this.getLatitude());
+        object.put("long", this.getLongitude());
+        object.put("date", this.getDate());
+        return object.toString();
     }
 
     @Override
